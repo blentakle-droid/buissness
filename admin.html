@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin</title>
+    <style>
+    body {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        font-family: Arial, sans-serif;
+        background-color: rgb(216, 233, 248);
+        color: darkblue;
+    }
+    hr {
+        width: 100vw;
+        margin-left: calc(-50vw + 50%);
+    }
+
+      ul {
+        list-style-type: none;
+        padding: 0;
+      }
+      li {
+        background-color: white;
+        margin: 5px 0;
+        padding: 10px;
+        border: 1px solid darkcyan;
+        border-radius: 3px;
+      }
+      input[type="checkbox"] {
+        margin-right: 10px;
+      }
+        input[type="checkbox"]:hover {
+            cursor: pointer;
+        }
+        h1, h2 {
+            margin-bottom:10px;
+        }
+    </style>
+</head>
+<body>
+   <h1>Admin page</h1>
+   <hr>
+    <h2>Scheduled lessons</h2>
+    <ul id="lessonList"></ul>
+    <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+    import { getFirestore, collection, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+    const firebaseConfig = {
+        apiKey: "AIzaSyDRvmdr6L1BNBCf-fKYQXiBfJNv6nqSqsI",
+        authDomain: "buisness-2e437.firebaseapp.com",
+        projectId: "buisness-2e437",
+        storageBucket: "buisness-2e437.firebasestorage.app",
+        messagingSenderId: "110299433324",
+        appId: "1:110299433324:web:d736423138c01762870b49"
+    };
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const lessonList = document.getElementById("lessonList");
+    async function fetchLessons() {
+        lessonList.innerHTML = "";
+        const querySnapshot = await getDocs(collection(db, "lessons"));
+       querySnapshot.forEach((lessonDoc) => {
+  const li = document.createElement("li");
+  const { name, date, time } = lessonDoc.data();
+
+  const checkbox = document.createElement("input");
+  checkbox.type = "checkbox";
+
+  li.prepend(checkbox);
+  li.append(`Name: ${name}, Date: ${date}, Time: ${time}`);
+  lessonList.appendChild(li);
+
+  checkbox.addEventListener("change", async () => {
+    try {
+      await deleteDoc(lessonDoc.ref);
+      li.remove();
+    } catch (err) {
+      console.error(err);
+      checkbox.checked = false;
+    }
+  });
+});
+}
+
+    var auth = getAuth();
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            fetchLessons();
+        } else {
+            window.location.href = "index.html";
+        }
+    });
+
+    </script>
+</body>
+</html>

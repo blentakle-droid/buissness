@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BmCh blind bag lessons</title>
+    <style>
+      body {
+        font-family:Georgia, 'Times New Roman', Times, serif;
+        background-color:rgb(216, 233, 248);
+        color:darkblue;
+        padding:10px;
+        align-items:center;
+      }
+      button {
+        cursor:pointer;
+        background-color:white;
+        color:darkcyan;
+        border:2px solid darkcyan;
+        padding:5px 10px;
+        border-radius:3px;
+      }
+      button:hover {
+        background-color:darkcyan;
+        color:white;
+      }
+      #scheduleDiv {
+        background-color:white;
+        padding:3px;
+        font-family:"Times New Roman", sans-serif, serif;
+      }
+      input, select {
+        color:darkblue;
+      }
+      input[type="text"], input[type="email"], input[type="password"] {
+        border:1px solid darkcyan;
+        border-radius:3px;
+        padding:5px;
+        margin:5px 0;
+      } 
+    </style>
+</head>
+<body>
+  <h1>Welcome to BmCh blind bag lessons!</h1>
+  <hr>
+  <p>Here, you can schedule a live blind bag lesson with your friends!</p>  
+  <button onclick="scheduleSomething()">Schedule something</button>
+  <div id="scheduleDiv" style="display:none">
+    <input placeholder="Name" id="nameInput">
+    <label for="dateInput" id="date-label">Date:</label>
+    <select id="dateInput">
+        <option value="monday">This monday</option><option value="tuesday">This tuesday</option> <option value="wednesday">This wednesday</option><option value="thursday">This thursday</option><option value="friday">This friday</option><option value="next-monday">Next monday</option><option value="next-tuesday">Next tuesday</option><option value="next-wednesday">Next wednesday</option> <option value="next-thursday">Next thursday</option> <option value="next-friday">Next friday</option>
+    </select>
+    <label for="timeInput" id="time-label">Time:</label>
+    <select id="timeInput">
+        <option value="12:00am">12:00am</option>
+        <option value="12:25">12:25am</option>
+    </select>
+    <button onclick="confirmSchedule()">Confirm</button>
+  </div>
+  <button onclick="adminStuff()">Go to admin page</button>
+  <script type="module">
+    // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+  import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
+  import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js"; 
+  
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDRvmdr6L1BNBCf-fKYQXiBfJNv6nqSqsI",
+    authDomain: "buisness-2e437.firebaseapp.com",
+    projectId: "buisness-2e437",
+    storageBucket: "buisness-2e437.firebasestorage.app",
+    messagingSenderId: "110299433324",
+    appId: "1:110299433324:web:d736423138c01762870b49"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+     window.scheduleSomething = async function() {
+        document.getElementById("scheduleDiv").style.display = "block";
+    }
+    window.confirmSchedule = function() {
+        var name = document.getElementById("nameInput").value;
+        var date = document.getElementById("dateInput").value;
+        var time = document.getElementById("timeInput").value;
+        alert("Lesson scheduled for " + name + " on " + date + " at " + time + "!" + " Bring 2 quarters to the lesson!");
+         addDoc(collection(db, "lessons"), {
+            name: name,
+            date: date,
+            time: time,
+            createdAt: Date.now()
+        }).then(() => {
+            console.log("Lesson scheduled successfully");   
+        });
+        var scheduleDiv = document.getElementById("scheduleDiv");
+        scheduleDiv.style.display = "none";
+      
+    }
+    window.adminStuff = function() {
+       var email = document.createElement("input");
+       var password = document.createElement("input");
+       var loginButton = document.createElement("button");
+        loginButton.innerText = "Login";
+        email.type = "email";
+        password.type = "password";
+        loginButton.onclick = function() {
+            var auth = getAuth(app);
+            signInWithEmailAndPassword(auth, email.value, password.value)
+            .then((userCredential) => {
+              // Signed in 
+              const user = userCredential.user;
+              alert("Logged in as " + user.email);
+              window.location.href = "admin.html";
+             }) .catch((error) => {
+              const errorCode = error.code;
+              const errorMessage = error.message;
+              alert("Error: " + errorMessage);
+             });
+            };
+         email.placeholder = "Email";
+        password.placeholder = "Password";
+        document.body.appendChild(email);
+        document.body.appendChild(password);
+        document.body.appendChild(loginButton);
+    }
+  </script>
+</body>
+</html>
