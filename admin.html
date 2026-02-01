@@ -50,22 +50,26 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
     import { getFirestore, collection, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+    
     const firebaseConfig = {
-        apiKey: "AIzaSyDRvmdr6L1BNBCf-fKYQXiBfJNv6nqSqsI",
-        authDomain: "buisness-2e437.firebaseapp.com",
-        projectId: "buisness-2e437",
-        storageBucket: "buisness-2e437.firebasestorage.app",
-        messagingSenderId: "110299433324",
-        appId: "1:110299433324:web:d736423138c01762870b49"
+      apiKey: "AIzaSyDRvmdr6L1BNBCf-fKYQXiBfJNv6nqSqsI",
+      authDomain: "buisness-2e437.firebaseapp.com",
+      projectId: "buisness-2e437",
+      storageBucket: "buisness-2e437.firebasestorage.app",
+      messagingSenderId: "110299433324",
+      appId: "1:110299433324:web:d736423138c01762870b49"
     };
+    
     // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
+    const auth = getAuth();
     const lessonList = document.getElementById("lessonList");
-async function fetchLessons() {
-    lessonList.innerHTML = "";
-    const querySnapshot = await getDocs(collection(db, "lessons"));
-    for (const lessonDoc of querySnapshot.docs) {
+
+    async function fetchLessons() {
+      lessonList.innerHTML = "";
+      const querySnapshot = await getDocs(collection(db, "lessons"));
+      for (const lessonDoc of querySnapshot.docs) {
         const li = document.createElement("li");
         const { name, date, time } = lessonDoc.data();
 
@@ -77,24 +81,29 @@ async function fetchLessons() {
         lessonList.appendChild(li);
 
         checkbox.addEventListener("change", async () => {
-            try {
-                await deleteDoc(lessonDoc.ref);
-                li.remove();
-            } catch (err) {
-                console.error(err);
-                checkbox.checked = false;
-            }
+          try {
+            await deleteDoc(lessonDoc.ref);
+            li.remove();
+          } catch (err) {
+            console.error(err);
+            checkbox.checked = false;
+          }
         });
+      }
     }
-}
 
-    var auth = getAuth();
     onAuthStateChanged(auth, (user) => {
-        if (user) {
-            fetchLessons();
-        } else {
-            window.location.href = "index.html";
-        }
+      if (user) {
+       
+         if (user.uid === "wND5CHzd2PaFNXNgAib4NiBvqia2") {
+        fetchLessons(); // Now it will fetch
+    } else {
+        alert("You are not authorized to view this page!");
+        window.location.href = "index.html";
+    }
+      } else {
+        window.location.href = "index.html";
+      }
     });
 
     </script>

@@ -56,6 +56,7 @@
         <option value="12:00am">12:00am</option>
         <option value="12:25">12:25am</option>
     </select>
+    
     <button onclick="confirmSchedule()">Confirm</button>
   </div>
   <button onclick="adminStuff()">Go to admin page</button>
@@ -78,6 +79,8 @@
   // Initialize Firebase
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
+  const auth = getAuth(app);
+  
      window.scheduleSomething = async function() {
         document.getElementById("scheduleDiv").style.display = "block";
     }
@@ -90,9 +93,12 @@
             name: name,
             date: date,
             time: time,
-            createdAt: Date.now()
+            createdAt: Date.now(),
+            
         }).then(() => {
             console.log("Lesson scheduled successfully");   
+        }).catch((error) => {
+            console.error("Error scheduling lesson: ", error);
         });
         var scheduleDiv = document.getElementById("scheduleDiv");
         scheduleDiv.style.display = "none";
@@ -106,7 +112,6 @@
         email.type = "email";
         password.type = "password";
         loginButton.onclick = function() {
-            var auth = getAuth(app);
             signInWithEmailAndPassword(auth, email.value, password.value)
             .then((userCredential) => {
               // Signed in 
@@ -124,10 +129,8 @@
         document.body.appendChild(email);
         document.body.appendChild(password);
         document.body.appendChild(loginButton);
-        
     }
   </script>
+ 
 </body>
-
 </html>
-
