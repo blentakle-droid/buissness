@@ -62,30 +62,30 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const lessonList = document.getElementById("lessonList");
-    async function fetchLessons() {
-        lessonList.innerHTML = "";
-        const querySnapshot = await getDocs(collection(db, "lessons"));
-       querySnapshot.forEach((lessonDoc) => {
-  const li = document.createElement("li");
-  const { name, date, time } = lessonDoc.data();
+async function fetchLessons() {
+    lessonList.innerHTML = "";
+    const querySnapshot = await getDocs(collection(db, "lessons"));
+    for (const lessonDoc of querySnapshot.docs) {
+        const li = document.createElement("li");
+        const { name, date, time } = lessonDoc.data();
 
-  const checkbox = document.createElement("input");
-  checkbox.type = "checkbox";
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
 
-  li.prepend(checkbox);
-  li.append(`Name: ${name}, Date: ${date}, Time: ${time}`);
-  lessonList.appendChild(li);
+        li.prepend(checkbox);
+        li.append(`Name: ${name}, Date: ${date}, Time: ${time}`);
+        lessonList.appendChild(li);
 
-  checkbox.addEventListener("change", async () => {
-    try {
-      await deleteDoc(lessonDoc.ref);
-      li.remove();
-    } catch (err) {
-      console.error(err);
-      checkbox.checked = false;
+        checkbox.addEventListener("change", async () => {
+            try {
+                await deleteDoc(lessonDoc.ref);
+                li.remove();
+            } catch (err) {
+                console.error(err);
+                checkbox.checked = false;
+            }
+        });
     }
-  });
-});
 }
 
     var auth = getAuth();
